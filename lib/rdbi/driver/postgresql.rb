@@ -35,6 +35,9 @@ class RDBI::Driver::PostgreSQL < RDBI::Driver
     end
 
     def transaction(&block)
+      if in_transaction?
+        raise "[RDBI] Already in transaction (not supported by PostgreSQL)"
+      end
       execute 'BEGIN'
       super
     end

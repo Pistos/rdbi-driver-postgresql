@@ -95,16 +95,13 @@ class TestDatabase < Test::Unit::TestCase
 
     assert_equal([[1]] * 5, dbh.execute("select * from foo").fetch(:all))
 
-    # dbh.transaction do
-      # assert(dbh.in_transaction?)
-      # dbh.transaction do
-        # assert(dbh.in_transaction?)
-        # dbh.execute( 'INSERT INTO foo ( bar ) VALUES ( ? )', 2 )
-      # end
-      # assert(dbh.in_transaction?)
-    # end
-#
-    # assert_equal( [ 2 ], dbh.execute( 'SELECT * FROM foo WHERE bar == 2' ).fetch( :all ) )
+    dbh.transaction do
+      assert dbh.in_transaction?
+      assert_raises do
+        dbh.transaction do
+        end
+      end
+    end
   end
 
   def test_06_preprocess_query
