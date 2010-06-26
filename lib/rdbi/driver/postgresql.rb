@@ -38,10 +38,6 @@ class RDBI::Driver::PostgreSQL < RDBI::Driver
     def transaction(&block)
       execute 'BEGIN'
       super
-      # @pg_conn.transaction do
-        # yield @pg_conn
-        # super
-      # end
     end
 
     def rollback
