@@ -5,3 +5,7 @@ The PostgreSQL database driver for RDBI.
 == Copyright
 
 Copyright (c) 2010 Pistos. See LICENCE for details.
+
+== Acknowledgements
+
+Thanks to Erik Hollensbe for sharing in-depth knowledge about RDBI and helping debug.
