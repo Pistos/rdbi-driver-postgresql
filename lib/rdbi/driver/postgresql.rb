@@ -27,7 +27,6 @@ class RDBI::Driver::PostgreSQL < RDBI::Driver
         @connect_args[:user],
         @connect_args[:password] || @connect_args[:auth]
       )
-      # @pg_conn.type_translation = false # XXX RDBI should handle this.
     end
 
     def disconnect
@@ -101,13 +100,6 @@ class RDBI::Driver::PostgreSQL < RDBI::Driver
       @pg_result = dbh.pg_conn.prepare( @stmt_name, query )
       @input_type_map  = RDBI::Type.create_type_hash(RDBI::Type::In)
       @output_type_map = RDBI::Type.create_type_hash(RDBI::Type::Out)
-      # @output_type_map[ :timestamp_with_time_zone ] = RDBI::Type.filterlist(
-        # TypeLib::Canned.build_strptime_filter( "%Y-%m-%d %H:%M:%S %z" )
-      # )
-      # @output_type_map[ :timestamp_without_time_zone ] = RDBI::Type.filterlist(
-        # TypeLib::Canned.build_strptime_filter( "%Y-%m-%d %H:%M:%S" )
-      # )
-      # @output_type_map[ :timestamp ] = @output_type_map[ :timestamp_without_time_zone ]
     end
 
     def new_execution(*binds)
@@ -126,7 +118,6 @@ class RDBI::Driver::PostgreSQL < RDBI::Driver
             row[ i ] << DateTime.now.strftime( " %z" )
           end
         end
-        # This could be faster without a regexp
         if c.type.start_with? 'timestamp'
           c.ruby_type = 'timestamp'.to_sym
         else
