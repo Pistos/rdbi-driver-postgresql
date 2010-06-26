@@ -7,9 +7,9 @@ begin
     gem.name = "rdbi-dbd-postgresql"
     gem.summary = %Q{PostgreSQL driver for RDBI}
     gem.description = %Q{PostgreSQL driver for RDBI}
-    gem.email = "erik@hollensbe.org"
+    gem.email = "rdbi@pistos.oib.com"
     gem.homepage = "http://github.com/Pistos/rdbi-dbd-postgresql"
-    gem.authors = ["Erik Hollensbe"]
+    gem.authors = [ "Pistos", "Erik Hollensbe" ]
 
     gem.add_development_dependency 'test-unit'
     gem.add_development_dependency 'rdoc'
