@@ -102,6 +102,16 @@ class TestDatabase < Test::Unit::TestCase
         end
       end
     end
+
+    # Not in a transaction
+
+    assert_raises do
+      dbh.rollback
+    end
+
+    assert_raises do
+      dbh.commit
+    end
   end
 
   def test_06_preprocess_query

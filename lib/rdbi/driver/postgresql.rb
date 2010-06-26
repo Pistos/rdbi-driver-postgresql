@@ -43,10 +43,16 @@ class RDBI::Driver::PostgreSQL < RDBI::Driver
     end
 
     def rollback
+      if ! in_transaction?
+        raise "[RDBI] Cannot rollback when not in a transaction"
+      end
       execute 'ROLLBACK'
       super
     end
     def commit
+      if ! in_transaction?
+        raise "[RDBI] Cannot commit when not in a transaction"
+      end
       execute 'COMMIT'
       super
     end
