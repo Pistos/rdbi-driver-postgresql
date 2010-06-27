@@ -103,8 +103,7 @@ class RDBI::Driver::PostgreSQL < RDBI::Driver
 
     def initialize( query, dbh )
       super( query, dbh )
-      # TODO: Choose a better statement name to guarantee uniqueness
-      @stmt_name = Time.now.to_f.to_s
+      @stmt_name = Thread.current.inspect + Time.now.to_f.to_s
       @pg_result = dbh.pg_conn.prepare(
         @stmt_name,
         Epoxy.new( query ).quote { |x| "$#{x+1}" }
