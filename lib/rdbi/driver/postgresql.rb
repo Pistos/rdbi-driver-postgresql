@@ -101,10 +101,11 @@ class RDBI::Driver::PostgreSQL < RDBI::Driver
     extend MethLab
 
     attr_accessor :pg_result
+    attr_threaded_accessor :stmt_name
 
     def initialize( query, dbh )
       super( query, dbh )
-      @stmt_name = Thread.current.inspect + Time.now.to_f.to_s
+      @stmt_name = Time.now.to_f.to_s
       @pg_result = dbh.pg_conn.prepare(
         @stmt_name,
         Epoxy.new( query ).quote { |x| "$#{x+1}" }
