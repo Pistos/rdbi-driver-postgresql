@@ -73,7 +73,7 @@ class RDBI::Driver::PostgreSQL < RDBI::Driver
       # execute("SELECT name FROM sqlite_master WHERE type='table'").fetch(:all).each do |row|
         # sch << table_schema(row[0])
       # end
-      return sch
+      sch
     end
 
     def table_schema(table_name)
@@ -88,7 +88,7 @@ class RDBI::Driver::PostgreSQL < RDBI::Driver
         sch.columns << col
       end
 
-      return sch
+      sch
     end
 
     inline(:ping)     { 0 }
@@ -139,7 +139,7 @@ class RDBI::Driver::PostgreSQL < RDBI::Driver
 
       pg_result.clear
 
-      return ary, this_schema, @output_type_map
+      [ ary, this_schema, @output_type_map ]
     end
 
     def finish
