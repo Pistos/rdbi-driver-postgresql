@@ -68,6 +68,7 @@ class RDBI::Driver::PostgreSQL < RDBI::Driver
       ep.quote { |x| @pg_conn.escape_string( binds[x].to_s ) }
     end
 
+    # TODO
     def schema
       sch = []
       # execute("SELECT name FROM sqlite_master WHERE type='table'").fetch(:all).each do |row|
@@ -76,6 +77,7 @@ class RDBI::Driver::PostgreSQL < RDBI::Driver
       sch
     end
 
+    # TODO
     def table_schema( table_name )
       sch = RDBI::Schema.new( [], [] )
       sch.tables << table_name.to_sym
@@ -103,9 +105,10 @@ class RDBI::Driver::PostgreSQL < RDBI::Driver
       super( query, dbh )
       # TODO: Choose a better statement name to guarantee uniqueness
       @stmt_name = Time.now.to_f.to_s
-      epoxy = Epoxy.new( query )
-      query = epoxy.quote { |x| "$#{x+1}" }
-      @pg_result = dbh.pg_conn.prepare( @stmt_name, query )
+      @pg_result = dbh.pg_conn.prepare(
+        @stmt_name,
+        Epoxy.new( query ).quote { |x| "$#{x+1}" }
+      )
       # @input_type_map initialized in superclass
       @output_type_map = RDBI::Type.create_type_hash( RDBI::Type::Out )
     end
