@@ -12,8 +12,10 @@ class Test::Unit::TestCase
 
   SQL = [
     'DROP TABLE IF EXISTS foo',
+    'DROP TABLE IF EXISTS bar',
     'DROP TABLE IF EXISTS time_test',
     'create table foo (bar integer)',
+    'create table bar (foo varchar, bar integer)',
     'create table time_test (my_date timestamp)',
   ]
 

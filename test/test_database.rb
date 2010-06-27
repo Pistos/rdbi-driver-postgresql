@@ -125,8 +125,6 @@ class TestDatabase < Test::Unit::TestCase
   def test_07_schema
     self.dbh = init_database
 
-    dbh.execute( 'DROP TABLE IF EXISTS bar' )
-    dbh.execute( "create table bar (foo varchar, bar integer)" )
     dbh.execute( "insert into bar (foo, bar) values (?, ?)", "foo", 1 )
     res = dbh.execute( "select * from bar" )
 
@@ -154,10 +152,11 @@ class TestDatabase < Test::Unit::TestCase
     assert_respond_to( dbh, :table_schema )
     schema = dbh.schema.sort_by { |x| x.tables[0].to_s }
 
-    tables = [ :foo, :time_test ]
+    tables = [ :bar, :foo, :time_test ]
     columns = {
+      :bar => { :foo => 'character varying'.to_sym, :bar => :integer },
       :foo => { :bar => :integer },
-      :time_test => { :my_date => :timestamp }
+      :time_test => { :my_date => 'timestamp without time zone'.to_sym }
     }
 
     schema.each_with_index do |sch, x|

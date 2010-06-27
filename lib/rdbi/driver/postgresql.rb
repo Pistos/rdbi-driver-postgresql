@@ -68,29 +68,30 @@ class RDBI::Driver::PostgreSQL < RDBI::Driver
       ep.quote { |x| @pg_conn.escape_string( binds[x].to_s ) }
     end
 
-    # TODO
-    def schema
-      sch = []
-      # execute("SELECT name FROM sqlite_master WHERE type='table'").fetch(:all).each do |row|
-        # sch << table_schema(row[0])
-      # end
-      sch
-    end
-
-    # TODO
     def table_schema( table_name )
       sch = RDBI::Schema.new( [], [] )
       sch.tables << table_name.to_sym
-      @pg_conn.table_info( table_name ) do |hash|
+
+      # TODO: Make secure by using binds?
+      execute( "SELECT column_name, data_type, is_nullable FROM information_schema.columns WHERE table_name = '#{table_name}';" ).fetch( :all ).each do |row|
         col = RDBI::Column.new
-        col.name       = hash['name'].to_sym
-        col.type       = hash['type'].to_sym
-        col.ruby_type  = hash['type'].to_sym
-        col.nullable   = !(hash['notnull'] == "0")
+        col.name       = row[0].to_sym
+        col.type       = row[1].to_sym
+        # TODO: ensure this ruby_type is solid, especially re: dates and times
+        col.ruby_type  = row[1].to_sym
+        col.nullable   = row[2]
         sch.columns << col
       end
 
       sch
+    end
+
+    def schema( pg_schema = 'public' )
+      schemata = []
+      execute( "SELECT table_name FROM information_schema.tables WHERE table_schema = '#{pg_schema}';" ).fetch( :all ).each do |row|
+        schemata << table_schema( row[0] )
+      end
+      schemata
     end
 
     inline(:ping)     { 0 }
