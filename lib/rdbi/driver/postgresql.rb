@@ -58,7 +58,7 @@ class RDBI::Driver::PostgreSQL < RDBI::Driver
     end
 
     def new_statement( query )
-      Statement.new(query, self)
+      Statement.new( query, self )
     end
 
     def preprocess_query( query, *binds )
