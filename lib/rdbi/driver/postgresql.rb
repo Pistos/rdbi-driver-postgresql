@@ -4,8 +4,8 @@ require 'methlab'
 require 'pg'
 
 class RDBI::Driver::PostgreSQL < RDBI::Driver
-  def initialize(*args)
-    super(Database, *args)
+  def initialize( *args )
+    super( Database, *args )
   end
 end
 
@@ -15,7 +15,7 @@ class RDBI::Driver::PostgreSQL < RDBI::Driver
 
     attr_accessor :pg_conn
 
-    def initialize(*args)
+    def initialize( *args )
       super( *args )
       self.database_name = @connect_args[:database]
       @pg_conn = PGconn.new(
@@ -34,7 +34,7 @@ class RDBI::Driver::PostgreSQL < RDBI::Driver
       super
     end
 
-    def transaction(&block)
+    def transaction( &block )
       if in_transaction?
         raise "[RDBI] Already in transaction (not supported by PostgreSQL)"
       end
@@ -57,14 +57,14 @@ class RDBI::Driver::PostgreSQL < RDBI::Driver
       super
     end
 
-    def new_statement(query)
+    def new_statement( query )
       Statement.new(query, self)
     end
 
-    def preprocess_query(query, *binds)
+    def preprocess_query( query, *binds )
       mutex.synchronize { @last_query = query }
 
-      ep = Epoxy.new(query)
+      ep = Epoxy.new( query )
       ep.quote { |x| @pg_conn.escape_string( binds[x].to_s ) }
     end
 
@@ -76,10 +76,10 @@ class RDBI::Driver::PostgreSQL < RDBI::Driver
       sch
     end
 
-    def table_schema(table_name)
-      sch = RDBI::Schema.new([], [])
+    def table_schema( table_name )
+      sch = RDBI::Schema.new( [], [] )
       sch.tables << table_name.to_sym
-      @pg_conn.table_info(table_name) do |hash|
+      @pg_conn.table_info( table_name ) do |hash|
         col = RDBI::Column.new
         col.name       = hash['name'].to_sym
         col.type       = hash['type'].to_sym
@@ -99,7 +99,7 @@ class RDBI::Driver::PostgreSQL < RDBI::Driver
 
     attr_accessor :pg_result
 
-    def initialize(query, dbh)
+    def initialize( query, dbh )
       super( query, dbh )
       # TODO: Choose a better statement name to guarantee uniqueness
       @stmt_name = Time.now.to_f.to_s
@@ -107,10 +107,10 @@ class RDBI::Driver::PostgreSQL < RDBI::Driver
       query = epoxy.quote { |x| "$#{x+1}" }
       @pg_result = dbh.pg_conn.prepare( @stmt_name, query )
       # @input_type_map initialized in superclass
-      @output_type_map = RDBI::Type.create_type_hash(RDBI::Type::Out)
+      @output_type_map = RDBI::Type.create_type_hash( RDBI::Type::Out )
     end
 
-    def new_execution(*binds)
+    def new_execution( *binds )
       pg_result = @dbh.pg_conn.exec_prepared( @stmt_name, binds )
       ary = pg_result.to_a.map { |h| h.values }
 
