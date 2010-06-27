@@ -97,7 +97,7 @@ class TestDatabase < Test::Unit::TestCase
 
     dbh.transaction do
       assert dbh.in_transaction?
-      assert_raises do
+      assert_raises( RDBI::TransactionError ) do
         dbh.transaction do
         end
       end
@@ -105,11 +105,11 @@ class TestDatabase < Test::Unit::TestCase
 
     # Not in a transaction
 
-    assert_raises do
+    assert_raises( RDBI::TransactionError ) do
       dbh.rollback
     end
 
-    assert_raises do
+    assert_raises( RDBI::TransactionError ) do
       dbh.commit
     end
   end
