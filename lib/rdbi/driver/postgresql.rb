@@ -16,7 +16,7 @@ class RDBI::Driver::PostgreSQL < RDBI::Driver
     attr_accessor :pg_conn
 
     def initialize(*args)
-      super
+      super( *args )
       self.database_name = @connect_args[:database]
       @pg_conn = PGconn.new(
         @connect_args[:host],
@@ -39,7 +39,7 @@ class RDBI::Driver::PostgreSQL < RDBI::Driver
         raise "[RDBI] Already in transaction (not supported by PostgreSQL)"
       end
       execute 'BEGIN'
-      super
+      super &block
     end
 
     def rollback
@@ -100,14 +100,13 @@ class RDBI::Driver::PostgreSQL < RDBI::Driver
     attr_accessor :pg_result
 
     def initialize(query, dbh)
-      super
-      @dbh = dbh
+      super( query, dbh )
       # TODO: Choose a better statement name to guarantee uniqueness
       @stmt_name = Time.now.to_f.to_s
       epoxy = Epoxy.new( query )
-      @query = query = epoxy.quote { |x| "$#{x+1}" }
+      query = epoxy.quote { |x| "$#{x+1}" }
       @pg_result = dbh.pg_conn.prepare( @stmt_name, query )
-      @input_type_map  = RDBI::Type.create_type_hash(RDBI::Type::In)
+      # @input_type_map initialized in superclass
       @output_type_map = RDBI::Type.create_type_hash(RDBI::Type::Out)
     end
 
