@@ -68,12 +68,23 @@ class RDBI::Driver::PostgreSQL < RDBI::Driver
       ep.quote { |x| @pg_conn.escape_string( binds[x].to_s ) }
     end
 
-    def table_schema( table_name )
+    def table_schema( table_name, pg_schema = 'public' )
       sch = RDBI::Schema.new( [], [] )
       sch.tables << table_name.to_sym
 
       # TODO: Make secure by using binds?
-      execute( "SELECT column_name, data_type, is_nullable FROM information_schema.columns WHERE table_name = '#{table_name}';" ).fetch( :all ).each do |row|
+      pg_table_type = execute(
+        "SELECT table_type FROM information_schema.tables WHERE table_schema = '#{pg_schema}' AND table_name = '#{table_name}'"
+      ).fetch( :all )[ 0 ][ 0 ]
+      case pg_table_type
+      when 'BASE TABLE'
+        sch.type = :table
+      when 'VIEW'
+        sch.type = :view
+      end
+
+      # TODO: Make secure by using binds?
+      execute( "SELECT column_name, data_type, is_nullable FROM information_schema.columns WHERE table_schema = '#{pg_schema}' AND table_name = '#{table_name}';" ).fetch( :all ).each do |row|
         col = RDBI::Column.new
         col.name       = row[0].to_sym
         col.type       = row[1].to_sym
@@ -89,7 +100,7 @@ class RDBI::Driver::PostgreSQL < RDBI::Driver
     def schema( pg_schema = 'public' )
       schemata = []
       execute( "SELECT table_name FROM information_schema.tables WHERE table_schema = '#{pg_schema}';" ).fetch( :all ).each do |row|
-        schemata << table_schema( row[0] )
+        schemata << table_schema( row[0], pg_schema )
       end
       schemata
     end
