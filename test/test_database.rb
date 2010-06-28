@@ -22,6 +22,15 @@ class TestDatabase < Test::Unit::TestCase
     self.dbh = init_database
     assert_kind_of(Numeric, dbh.ping)
     assert_kind_of(Numeric, RDBI.ping(:PostgreSQL, :database => "rdbi"))
+    dbh.disconnect
+
+    assert_raises(RDBI::DisconnectedError.new("not connected")) do
+      dbh.ping
+    end
+   
+    # XXX This should still work because it connects. Obviously, testing a
+    # downed database is gonna be pretty hard.
+    assert_kind_of(Numeric, RDBI.ping(:PostgreSQL, :database => "rdbi"))
   end
 
   def test_03_execute
