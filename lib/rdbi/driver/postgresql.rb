@@ -19,11 +19,11 @@ class RDBI::Driver::PostgreSQL < RDBI::Driver
       super( *args )
       self.database_name = @connect_args[:database]
       @pg_conn = PGconn.new(
-        @connect_args[:host],
+        @connect_args[:host] || @connect_args[:hostname],
         @connect_args[:port],
         @connect_args[:options],
         @connect_args[:tty],
-        @connect_args[:dbname] || @connect_args[:database],
+        @connect_args[:dbname] || @connect_args[:database] || @connect_args[:db],
         @connect_args[:user],
         @connect_args[:password] || @connect_args[:auth]
       )
