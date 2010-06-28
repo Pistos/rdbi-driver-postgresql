@@ -105,7 +105,17 @@ class RDBI::Driver::PostgreSQL < RDBI::Driver
       schemata
     end
 
-    inline(:ping)     { 0 }
+    def ping
+      start = Time.now
+      rows = execute("SELECT 1").rows
+      stop = Time.now
+
+      if rows > 0
+        stop.to_i - start.to_i
+      else
+        raise RDBI::DisconnectedError, "disconnected during ping"
+      end
+    end
   end
 
   class Statement < RDBI::Statement

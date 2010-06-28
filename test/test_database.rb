@@ -19,9 +19,9 @@ class TestDatabase < Test::Unit::TestCase
   end
 
   def test_02_ping
-    assert_equal( 0, RDBI.ping( :PostgreSQL, :database => "rdbi" ) )
-    self.dbh = new_database
-    assert_equal( 0, dbh.ping )
+    self.dbh = init_database
+    assert_kind_of(Numeric, dbh.ping)
+    assert_kind_of(Numeric, RDBI.ping(:PostgreSQL, :database => "rdbi"))
   end
 
   def test_03_execute
