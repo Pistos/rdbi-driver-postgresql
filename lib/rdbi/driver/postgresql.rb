@@ -74,7 +74,9 @@ class RDBI::Driver::PostgreSQL < RDBI::Driver
 
       # TODO: Make secure by using binds?
       pg_table_type = execute(
-        "SELECT table_type FROM information_schema.tables WHERE table_schema = '#{pg_schema}' AND table_name = '#{table_name}'"
+        "SELECT table_type FROM information_schema.tables WHERE table_schema = ? AND table_name = ?",
+        pg_schema,
+        table_name
       ).fetch( :all )[ 0 ][ 0 ]
       case pg_table_type
       when 'BASE TABLE'
@@ -84,13 +86,16 @@ class RDBI::Driver::PostgreSQL < RDBI::Driver
       end
 
       # TODO: Make secure by using binds?
-      execute( "SELECT column_name, data_type, is_nullable FROM information_schema.columns WHERE table_schema = '#{pg_schema}' AND table_name = '#{table_name}';" ).fetch( :all ).each do |row|
+      execute( "SELECT column_name, data_type, is_nullable FROM information_schema.columns WHERE table_schema = ? AND table_name = ?",
+        pg_schema,
+        table_name
+      ).fetch( :all ).each do |row|
         col = RDBI::Column.new
         col.name       = row[0].to_sym
         col.type       = row[1].to_sym
         # TODO: ensure this ruby_type is solid, especially re: dates and times
         col.ruby_type  = row[1].to_sym
-        col.nullable   = row[2]
+        col.nullable   = row[2] == "YES"
         sch.columns << col
       end
 
@@ -144,9 +149,21 @@ class RDBI::Driver::PostgreSQL < RDBI::Driver
 
     def new_execution( *binds )
       pg_result = @dbh.pg_conn.exec_prepared( @stmt_name, binds )
-      ary = pg_result.to_a.map { |h| h.values }
 
+      # XXX when did PGresult get so stupid?
+      ary = []
+      pg_result.each do |tuple|
+        row = []
+        0.upto(pg_result.num_fields-1) do |x|
+          row[x] = tuple[pg_result.fname(x)]
+        end
+
+        ary.push row
+      end
+      # XXX end stupid rectifier.
+      
       columns = []
+      stub_datetime = DateTime.now.strftime( " %z" )
       (0...pg_result.num_fields).each do |i|
         c = RDBI::Column.new
         c.name = pg_result.fname( i )
@@ -155,7 +172,7 @@ class RDBI::Driver::PostgreSQL < RDBI::Driver
         )[ 0 ].values[ 0 ]
         if c.type == 'timestamp without time zone'
           ary.each do |row|
-            row[ i ] << DateTime.now.strftime( " %z" )
+            row[ i ] << stub_datetime
           end
         end
         if c.type.start_with? 'timestamp'
