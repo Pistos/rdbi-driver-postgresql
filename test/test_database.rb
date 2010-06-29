@@ -183,7 +183,10 @@ class TestDatabase < Test::Unit::TestCase
       end
     end
 
-    result = dbh.execute( "SELECT * FROM ordinals ORDER BY id" )
+    result = dbh.execute( "SELECT id, cardinal FROM ordinals ORDER BY id" )
+    rows = result.fetch( :all, RDBI::Result::Driver::Array )
+    assert_kind_of( Fixnum, rows[ 0 ][ 0 ] )
+    assert_kind_of( Fixnum, rows[ 0 ][ 1 ] )
     rows = result.fetch( :all, RDBI::Result::Driver::Struct )
     assert_kind_of( Fixnum, rows[ 0 ][ :id ] )
     assert_kind_of( Fixnum, rows[ 0 ][ :cardinal ] )
