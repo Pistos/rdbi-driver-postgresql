@@ -18,10 +18,10 @@ class Test::Unit::TestCase
     'create table foo (bar integer)',
     'create table bar (foo varchar, bar integer)',
     'create table time_test (my_date timestamp)',
-    'CREATE TABLE ordinals ( id SERIAL PRIMARY KEY, s VARCHAR )',
-    "INSERT INTO ordinals ( s ) VALUES ( 'first' )",
-    "INSERT INTO ordinals ( s ) VALUES ( 'second' )",
-    "INSERT INTO ordinals ( s ) VALUES ( 'third' )",
+    'CREATE TABLE ordinals ( id SERIAL PRIMARY KEY, cardinal INTEGER, s VARCHAR )',
+    "INSERT INTO ordinals ( cardinal, s ) VALUES ( 1, 'first' )",
+    "INSERT INTO ordinals ( cardinal, s ) VALUES ( 2, 'second' )",
+    "INSERT INTO ordinals ( cardinal, s ) VALUES ( 3, 'third' )",
   ]
 
   def new_database

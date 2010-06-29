@@ -166,7 +166,11 @@ class TestDatabase < Test::Unit::TestCase
       :bar => { :foo => 'character varying'.to_sym, :bar => :integer },
       :foo => { :bar => :integer },
       :time_test => { :my_date => 'timestamp without time zone'.to_sym },
-      :ordinals => { :id => :integer, :s => 'character varying'.to_sym },
+      :ordinals => {
+        :id => :integer,
+        :cardinal => :integer,
+        :s => 'character varying'.to_sym,
+      },
     }
 
     schema.each_with_index do |sch, x|
@@ -178,5 +182,10 @@ class TestDatabase < Test::Unit::TestCase
         assert_equal( columns[ tables[x] ][ col.name ], col.type )
       end
     end
+
+    result = dbh.execute( "SELECT * FROM ordinals ORDER BY id" )
+    rows = result.fetch( :all, RDBI::Result::Driver::Struct )
+    assert_kind_of( Fixnum, rows[ 0 ][ :id ] )
+    assert_kind_of( Fixnum, rows[ 0 ][ :cardinal ] )
   end
 end
