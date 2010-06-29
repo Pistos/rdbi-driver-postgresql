@@ -166,7 +166,7 @@ class RDBI::Driver::PostgreSQL < RDBI::Driver
       stub_datetime = DateTime.now.strftime( " %z" )
       (0...pg_result.num_fields).each do |i|
         c = RDBI::Column.new
-        c.name = pg_result.fname( i )
+        c.name = pg_result.fname( i ).to_sym
         c.type = @dbh.pg_conn.exec(
           "SELECT format_type( #{ pg_result.ftype(i) }, #{ pg_result.fmod(i) } )"
         )[ 0 ].values[ 0 ]
