@@ -24,7 +24,7 @@ class RDBI::Driver::PostgreSQL < RDBI::Driver
         @connect_args[:options],
         @connect_args[:tty],
         self.database_name,
-        @connect_args[:user],
+        @connect_args[:user] || @connect_args[:username],
         @connect_args[:password] || @connect_args[:auth]
       )
     end
@@ -161,7 +161,7 @@ class RDBI::Driver::PostgreSQL < RDBI::Driver
         ary.push row
       end
       # XXX end stupid rectifier.
-      
+
       columns = []
       stub_datetime = DateTime.now.strftime( " %z" )
       (0...pg_result.num_fields).each do |i|
