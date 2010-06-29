@@ -14,9 +14,14 @@ class Test::Unit::TestCase
     'DROP TABLE IF EXISTS foo',
     'DROP TABLE IF EXISTS bar',
     'DROP TABLE IF EXISTS time_test',
+    'DROP TABLE IF EXISTS ordinals',
     'create table foo (bar integer)',
     'create table bar (foo varchar, bar integer)',
     'create table time_test (my_date timestamp)',
+    'CREATE TABLE ordinals ( id SERIAL PRIMARY KEY, s VARCHAR )',
+    "INSERT INTO ordinals ( s ) VALUES ( 'first' )",
+    "INSERT INTO ordinals ( s ) VALUES ( 'second' )",
+    "INSERT INTO ordinals ( s ) VALUES ( 'third' )",
   ]
 
   def new_database

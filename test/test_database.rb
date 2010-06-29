@@ -27,7 +27,7 @@ class TestDatabase < Test::Unit::TestCase
     assert_raises(RDBI::DisconnectedError.new("not connected")) do
       dbh.ping
     end
-   
+
     # XXX This should still work because it connects. Obviously, testing a
     # downed database is gonna be pretty hard.
     assert_kind_of(Numeric, RDBI.ping(:PostgreSQL, :database => "rdbi"))
@@ -161,11 +161,12 @@ class TestDatabase < Test::Unit::TestCase
     assert_respond_to( dbh, :table_schema )
     schema = dbh.schema.sort_by { |x| x.tables[0].to_s }
 
-    tables = [ :bar, :foo, :time_test ]
+    tables = [ :bar, :foo, :ordinals, :time_test ]
     columns = {
       :bar => { :foo => 'character varying'.to_sym, :bar => :integer },
       :foo => { :bar => :integer },
-      :time_test => { :my_date => 'timestamp without time zone'.to_sym }
+      :time_test => { :my_date => 'timestamp without time zone'.to_sym },
+      :ordinals => { :id => :integer, :s => 'character varying'.to_sym },
     }
 
     schema.each_with_index do |sch, x|
