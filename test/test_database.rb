@@ -158,7 +158,6 @@ class TestDatabase < Test::Unit::TestCase
   def test_09_basic_schema
     self.dbh = init_database
     assert_respond_to( dbh, :schema )
-    assert_respond_to( dbh, :table_schema )
     schema = dbh.schema.sort_by { |x| x.tables[0].to_s }
 
     tables = [ :bar, :foo, :ordinals, :time_test ]
@@ -190,5 +189,29 @@ class TestDatabase < Test::Unit::TestCase
     rows = result.fetch( :all, RDBI::Result::Driver::Struct )
     assert_kind_of( Fixnum, rows[ 0 ][ :id ] )
     assert_kind_of( Fixnum, rows[ 0 ][ :cardinal ] )
+  end
+
+  def test_10_table_schema
+    self.dbh = init_database
+    assert_respond_to( dbh, :table_schema )
+
+    schema = dbh.table_schema( :foo )
+    columns = schema.columns
+    assert_equal columns.size, 1
+    c = columns[ 0 ]
+    assert_equal c.name, :bar
+    assert_equal c.type, :integer
+
+    schema = dbh.table_schema( :bar )
+    columns = schema.columns
+    assert_equal columns.size, 2
+    columns.each do |c|
+      case c.name
+      when :foo
+        assert_equal c.type, 'character varying'.to_sym
+      when :bar
+        assert_equal c.type, :integer
+      end
+    end
   end
 end
