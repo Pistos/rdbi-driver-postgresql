@@ -72,7 +72,6 @@ class RDBI::Driver::PostgreSQL < RDBI::Driver
       sch = RDBI::Schema.new( [], [] )
       sch.tables << table_name.to_sym
 
-      # TODO: Make secure by using binds?
       pg_table_type = execute(
         "SELECT table_type FROM information_schema.tables WHERE table_schema = ? AND table_name = ?",
         pg_schema,
@@ -85,7 +84,6 @@ class RDBI::Driver::PostgreSQL < RDBI::Driver
         sch.type = :view
       end
 
-      # TODO: Make secure by using binds?
       execute( "SELECT column_name, data_type, is_nullable FROM information_schema.columns WHERE table_schema = ? AND table_name = ?",
         pg_schema,
         table_name
