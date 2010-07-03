@@ -72,12 +72,16 @@ class RDBI::Driver::PostgreSQL < RDBI::Driver
       sch = RDBI::Schema.new( [], [] )
       sch.tables << table_name.to_sym
 
-      pg_table_type = execute(
+      info_row = execute(
         "SELECT table_type FROM information_schema.tables WHERE table_schema = ? AND table_name = ?",
         pg_schema,
         table_name
-      ).fetch( :all )[ 0 ][ 0 ]
-      case pg_table_type
+      ).fetch( :all )[ 0 ]
+      if info_row.nil?
+        raise RDBI::Error.new( "Could not determine table type for table #{pg_schema}.#{table_name}" )
+      end
+
+      case info_row[ 0 ]
       when 'BASE TABLE'
         sch.type = :table
       when 'VIEW'

@@ -213,5 +213,9 @@ class TestDatabase < Test::Unit::TestCase
         assert_equal c.type, :integer
       end
     end
+
+    assert_raises( RDBI::Error ) do
+      dbh.table_schema( :non_existent )
+    end
   end
 end
