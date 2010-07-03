@@ -13,6 +13,7 @@ begin
 
     gem.add_development_dependency 'test-unit'
     gem.add_development_dependency 'rdoc'
+    gem.add_development_dependency 'bacon'
 
     gem.add_dependency 'rdbi'
     gem.add_dependency 'pg'
