@@ -38,6 +38,7 @@ class TestDatabase < Test::Unit::TestCase
     res = dbh.execute( "insert into foo (bar) values (?)", 1 )
     assert res
     assert_kind_of( RDBI::Result, res )
+    assert_equal( 1, res.rows )
 
     res = dbh.execute( "select * from foo" )
     assert res
@@ -53,7 +54,10 @@ class TestDatabase < Test::Unit::TestCase
     assert_kind_of( RDBI::Statement, sth )
     assert_respond_to( sth, :execute )
 
-    5.times { sth.execute(1) }
+    5.times do
+      res = sth.execute( 1 )
+      assert_equal( 1, res.rows )
+    end
 
     assert_equal( dbh.last_statement.object_id, sth.object_id )
 
