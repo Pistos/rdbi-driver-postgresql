@@ -69,9 +69,6 @@ class RDBI::Driver::PostgreSQL < RDBI::Driver
     end
 
     def table_schema( table_name, pg_schema = 'public' )
-      sch = RDBI::Schema.new( [], [] )
-      sch.tables << table_name.to_sym
-
       info_row = execute(
         "SELECT table_type FROM information_schema.tables WHERE table_schema = ? AND table_name = ?",
         pg_schema,
@@ -80,6 +77,9 @@ class RDBI::Driver::PostgreSQL < RDBI::Driver
       if info_row.nil?
         return nil
       end
+
+      sch = RDBI::Schema.new( [], [] )
+      sch.tables << table_name.to_sym
 
       case info_row[ 0 ]
       when 'BASE TABLE'
