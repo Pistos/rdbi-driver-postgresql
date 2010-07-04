@@ -149,6 +149,7 @@ class RDBI::Driver::PostgreSQL < RDBI::Driver
       @output_type_map = RDBI::Type.create_type_hash( RDBI::Type::Out )
     end
 
+    # Returns an Array of things used to fill out the parameters to RDBI::Result.new
     def new_execution( *binds )
       pg_result = @dbh.pg_conn.exec_prepared( @stmt_name, binds )
 
@@ -190,9 +191,11 @@ class RDBI::Driver::PostgreSQL < RDBI::Driver
       this_schema = RDBI::Schema.new
       this_schema.columns = columns
 
+      num_affected = pg_result.cmd_tuples
+
       pg_result.clear
 
-      [ ary, this_schema, @output_type_map ]
+      [ ary, this_schema, @output_type_map, num_affected ]
     end
 
     def finish
