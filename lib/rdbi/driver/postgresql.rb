@@ -174,7 +174,9 @@ class RDBI::Driver::PostgreSQL < RDBI::Driver
         )[ 0 ].values[ 0 ]
         if c.type == 'timestamp without time zone'
           ary.each do |row|
-            row[ i ] << stub_datetime
+            if row[ i ]
+              row[ i ] << stub_datetime
+            end
           end
         end
         if c.type.start_with? 'timestamp'

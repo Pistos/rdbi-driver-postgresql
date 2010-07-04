@@ -153,6 +153,13 @@ class TestDatabase < Test::Unit::TestCase
 
     assert_kind_of( DateTime, dt2 )
     assert_equal( dt2.to_s, dt.to_s )
+
+    dbh.execute 'INSERT INTO time_test ( my_date ) VALUES ( NULL )'
+    dt3 = "not nil"
+    assert_nothing_raised do
+      dt3 = dbh.execute( 'SELECT * FROM time_test WHERE my_date IS NULL LIMIT 1' ).fetch( 1 )[0][0]
+    end
+    assert_nil dt3
   end
 
   def test_09_basic_schema
