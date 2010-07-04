@@ -115,7 +115,7 @@ class RDBI::Driver::PostgreSQL < RDBI::Driver
     def ping
       start = Time.now
       rows = begin
-               execute("SELECT 1").rows
+               execute("SELECT 1").result_count
              rescue PGError => e
                # XXX Sorry this sucks. PGconn is completely useless without a
                # connection... like asking it if it's connected.
