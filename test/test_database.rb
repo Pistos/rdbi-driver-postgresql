@@ -221,8 +221,6 @@ class TestDatabase < Test::Unit::TestCase
       end
     end
 
-    assert_raises( RDBI::Error ) do
-      dbh.table_schema( :non_existent )
-    end
+    assert_nil dbh.table_schema( :non_existent )
   end
 end

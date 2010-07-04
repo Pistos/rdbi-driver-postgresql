@@ -78,7 +78,7 @@ class RDBI::Driver::PostgreSQL < RDBI::Driver
         table_name
       ).fetch( :all )[ 0 ]
       if info_row.nil?
-        raise RDBI::Error.new( "Could not determine table type for table #{pg_schema}.#{table_name} in database #{self.database_name}" )
+        return nil
       end
 
       case info_row[ 0 ]
