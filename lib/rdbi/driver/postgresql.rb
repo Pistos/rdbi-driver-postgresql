@@ -147,6 +147,7 @@ class RDBI::Driver::PostgreSQL < RDBI::Driver
       )
       # @input_type_map initialized in superclass
       @output_type_map = RDBI::Type.create_type_hash( RDBI::Type::Out )
+      @output_type_map[ :bigint ] = RDBI::Type.filterlist( RDBI::Type::Filters::STR_TO_INT )
     end
 
     # Returns an Array of things used to fill out the parameters to RDBI::Result.new
