@@ -156,10 +156,10 @@ class RDBI::Driver::PostgreSQL < RDBI::Driver
 
       # XXX when did PGresult get so stupid?
       ary = []
-      pg_result.each do |tuple|
+      pg_result.num_tuples.times do |i|
         row = []
-        0.upto(pg_result.num_fields-1) do |x|
-          row[x] = tuple[pg_result.fname(x)]
+        pg_result.num_fields.times do |j|
+          row[ j ] = pg_result.getvalue( i, j )
         end
 
         ary.push row
