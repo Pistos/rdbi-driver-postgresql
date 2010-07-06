@@ -62,7 +62,7 @@ class TestDatabase < Test::Unit::TestCase
     row = res.as( :Array ).fetch( :first )
     assert_equal 5, row[ 0 ]
 
-    time_str = '2010-07-04 22:05:00'
+    time_str = '2010-07-04 22:05:00 -0400'
     res = dbh.execute( "SELECT 5, TRUE, 'hello', '#{time_str}'::TIMESTAMP" )
     assert res
     assert_kind_of( RDBI::Result, res )
@@ -70,7 +70,7 @@ class TestDatabase < Test::Unit::TestCase
     assert_equal 5, row[ 0 ]
     assert_equal true, row[ 1 ]
     assert_equal 'hello', row[ 2 ]
-    assert_equal Time.parse( time_str )
+    assert_equal DateTime.parse( time_str ), row[ 3 ]
   end
 
   def test_04_prepare
