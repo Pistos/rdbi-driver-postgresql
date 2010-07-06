@@ -54,7 +54,23 @@ class TestDatabase < Test::Unit::TestCase
     assert_kind_of( RDBI::Result, res )
     assert_equal( [[1]], res.fetch(:all) )
     row = res.as( :Array ).fetch( :first )
-    assert_equal( 1, row[0] )
+    assert_equal 1, row[ 0 ]
+
+    res = dbh.execute( "SELECT 5" )
+    assert res
+    assert_kind_of( RDBI::Result, res )
+    row = res.as( :Array ).fetch( :first )
+    assert_equal 5, row[ 0 ]
+
+    time_str = '2010-07-04 22:05:00'
+    res = dbh.execute( "SELECT 5, TRUE, 'hello', '#{time_str}'::TIMESTAMP" )
+    assert res
+    assert_kind_of( RDBI::Result, res )
+    row = res.fetch( :all )[ 0 ]
+    assert_equal 5, row[ 0 ]
+    assert_equal true, row[ 1 ]
+    assert_equal 'hello', row[ 2 ]
+    assert_equal Time.parse( time_str )
   end
 
   def test_04_prepare
